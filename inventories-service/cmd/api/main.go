@@ -19,11 +19,11 @@ func main() {
 	flag.StringVar(&app.Port, "port", "8081", "Port for inventories service")
 	flag.Parse()
 
-	err := http.ListenAndServe(fmt.Sprintf(":%s", app.Port), nil)
+	log.Println("starting app on port ", app.Port)
+
+	err := http.ListenAndServe(fmt.Sprintf(":%s", app.Port), app.routes())
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Println("starting app on port ", app.Port)
 
 }
