@@ -1,0 +1,1 @@
+migrate -database postgres://postgres:postgres@localhost:5432/inventories?sslmode=disable -path sql/migrations up
