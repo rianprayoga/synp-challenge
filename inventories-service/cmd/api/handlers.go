@@ -71,6 +71,11 @@ func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJson(w, http.StatusOK, item)
+}
+
+func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
+	var req model.CreateItem
+	app.readJSON(w, r, &req)
 
 }
 

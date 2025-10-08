@@ -9,3 +9,8 @@ type Item struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
+
+type CreateItem struct {
+	Name  string `json:"name" validate:"required,min=3"`
+	Stock int    `json:"stock" validate:"required,gt=0"`
+}
