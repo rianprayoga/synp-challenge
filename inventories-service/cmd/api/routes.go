@@ -12,10 +12,8 @@ func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(middleware.Recoverer)
 
-	mux.Get("/", app.Home)
-
-	// should return list of inventories
 	mux.Get("/items", app.GetItems)
+
 	// return invotories by id
 	mux.Get("/items/{id}", nil)
 	// add inventory

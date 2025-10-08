@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-func (app *application) Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "inventoris app running")
-}
-
 func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 
 	var pageSize int
@@ -67,6 +63,10 @@ func getItems(app *application, size int, cursor string) ([]*model.Item, error) 
 	}
 
 	nextCursor, err := b64.StdEncoding.DecodeString(cursor)
+	if err != nil {
+		return nil, err
+	}
+
 	c, err := time.Parse(time.RFC3339, string(nextCursor))
 	if err != nil {
 		return nil, err
