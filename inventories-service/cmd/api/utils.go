@@ -3,11 +3,14 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	appError "inventories-app/internal/error"
 	"io"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
 
-
+var validate = validator.New()
 
 type JSONResponse struct {
 	Message string `json:"message"`
@@ -36,7 +39,7 @@ func (app *application) writeJson(w http.ResponseWriter, status int, data interf
 	return nil
 }
 
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
+func (app *application) readJSON(r *http.Request, data interface{}) error {
 
 	dec := json.NewDecoder(r.Body)
 
@@ -50,7 +53,18 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data in
 		return errors.New("invalid request, must only containt single JSON")
 	}
 
-	return nil
+	err = validate.Struct(data)
+	var validationErrors validator.ValidationErrors
+	if !errors.As(err, &validationErrors) {
+		return err
+	}
+
+	ve := validationErrors[0] // get the 1st error
+
+	return &appError.HttpError{
+		Err:        errors.New(ve.Field() + " does not match the requierment"),
+		StatusCode: http.StatusBadRequest,
+	}
 }
 
 func (app *application) errorJSON(w http.ResponseWriter, err error, status ...int) error {

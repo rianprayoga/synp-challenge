@@ -60,9 +60,9 @@ func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
 
 	item, err := app.DB.GetItem(id)
 	if err != nil {
-		if errors.Is(err, appError.ErrItemNotFound) {
-
-			app.errorJSON(w, err, http.StatusNotFound)
+		ok, httpError := isHttpError(err)
+		if ok {
+			app.errorJSON(w, httpError.Err, httpError.StatusCode)
 			return
 		}
 
@@ -75,8 +75,35 @@ func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
 	var req model.CreateItem
-	app.readJSON(w, r, &req)
+	err := app.readJSON(r, &req)
+	if err != nil {
+		ok, httpError := isHttpError(err)
+		if ok {
+			app.errorJSON(w, httpError.Err, httpError.StatusCode)
+			return
+		}
 
+		app.errorJSON(w, err)
+		return
+	}
+
+	res, err := app.DB.AddItem(req)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJson(w, http.StatusCreated, res)
+
+}
+
+func isHttpError(err error) (bool, *appError.HttpError) {
+	var httpError *appError.HttpError
+	if errors.As(err, &httpError) {
+		return true, httpError
+	}
+
+	return false, nil
 }
 
 func getItems(app *application, size int, cursor string) ([]*model.Item, error) {

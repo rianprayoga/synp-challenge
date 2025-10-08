@@ -14,8 +14,8 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/items", app.GetItems)
 	mux.Get("/items/{id}", app.GetItem)
-	// add inventory
-	mux.Post("/items", nil)
+	mux.Post("/items", app.AddItem)
+
 	// update invotories by id
 	mux.Put("/items/{id}", nil)
 	// delete inventory

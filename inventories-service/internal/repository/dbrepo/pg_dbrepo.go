@@ -124,5 +124,36 @@ func (r *PostgresDBRepo) GetItem(id string) (*model.Item, error) {
 	}
 
 	return &item, nil
+}
+
+func (r *PostgresDBRepo) AddItem(item model.CreateItem) (*model.Item, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	var createdItem model.Item
+
+	err := r.DB.QueryRowContext(
+		ctx,
+		`INSERT INTO items
+			(name, stock, created_at, updated_at)
+		VALUES ($1,$2,$3,$4)
+		RETURNING id, name, stock, created_at, updated_at`,
+		item.Name,
+		item.Stock,
+		time.Now(),
+		time.Now(),
+	).Scan(
+		&createdItem.ID,
+		&createdItem.Name,
+		&createdItem.Stock,
+		&createdItem.CreatedAt,
+		&createdItem.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &createdItem, nil
 
 }
