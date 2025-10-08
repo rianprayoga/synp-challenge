@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"inventories-app/internal/repository"
+	"inventories-app/internal/repository/dbrepo"
 	"log"
 	"net/http"
 )
@@ -10,6 +12,7 @@ import (
 type application struct {
 	DSN  string
 	Port string
+	DB   repository.DBRepo
 }
 
 func main() {
@@ -21,7 +24,15 @@ func main() {
 
 	log.Println("starting app on port ", app.Port)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%s", app.Port), app.routes())
+	conn, err := app.connectDb()
+	if err != nil {
+		log.Fatal(err)
+
+	}
+	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
+	defer conn.Close()
+
+	err = http.ListenAndServe(fmt.Sprintf(":%s", app.Port), app.routes())
 	if err != nil {
 		log.Fatal(err)
 	}

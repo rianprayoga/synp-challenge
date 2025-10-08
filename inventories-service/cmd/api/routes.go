@@ -15,7 +15,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/", app.Home)
 
 	// should return list of inventories
-	mux.Get("/items", nil)
+	mux.Get("/items", app.GetItems)
 	// return invotories by id
 	mux.Get("/items/{id}", nil)
 	// add inventory
