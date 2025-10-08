@@ -8,4 +8,5 @@ import (
 type DBRepo interface {
 	GetItemsWithCursor(pageSize int, cursor time.Time) ([]*model.Item, error)
 	GetItems(pageSize int) ([]*model.Item, error)
+	GetItem(id string) (*model.Item, error)
 }

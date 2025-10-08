@@ -3,6 +3,8 @@ package dbrepo
 import (
 	"context"
 	"database/sql"
+	"errors"
+	appError "inventories-app/internal/error"
 	"inventories-app/internal/model"
 	"time"
 )
@@ -92,4 +94,35 @@ func (r *PostgresDBRepo) GetItems(pageSize int) ([]*model.Item, error) {
 	}
 
 	return items, nil
+}
+
+func (r *PostgresDBRepo) GetItem(id string) (*model.Item, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `
+			SELECT id, name, stock, created_at, updated_at
+			FROM items
+			WHERE id = $1
+		`
+
+	row := r.DB.QueryRowContext(ctx, query, id)
+	var item model.Item
+	err := row.Scan(
+		&item.ID,
+		&item.Name,
+		&item.Stock,
+		&item.CreatedAt,
+		&item.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, appError.ErrItemNotFound
+		}
+		return nil, err
+	}
+
+	return &item, nil
+
 }

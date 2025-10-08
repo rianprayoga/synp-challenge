@@ -13,9 +13,7 @@ func (app *application) routes() http.Handler {
 	mux.Use(middleware.Recoverer)
 
 	mux.Get("/items", app.GetItems)
-
-	// return invotories by id
-	mux.Get("/items/{id}", nil)
+	mux.Get("/items/{id}", app.GetItem)
 	// add inventory
 	mux.Post("/items", nil)
 	// update invotories by id

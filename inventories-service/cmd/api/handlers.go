@@ -2,12 +2,15 @@ package main
 
 import (
 	b64 "encoding/base64"
-	"fmt"
+	"errors"
+	appError "inventories-app/internal/error"
 	"inventories-app/internal/model"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +23,7 @@ func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 		tmp, err := strconv.Atoi(size)
 		if err != nil {
 			log.Println(err)
-			app.errorJSON(w, fmt.Errorf("something went wrong"))
+			app.errorJSON(w, appError.ErrUnexpected)
 			return
 		}
 		pageSize = tmp
@@ -31,7 +34,7 @@ func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 	items, err := getItems(app, pageSize, cursor)
 	if err != nil {
 		log.Println(err)
-		app.errorJSON(w, fmt.Errorf("something went wrong"))
+		app.errorJSON(w, appError.ErrUnexpected)
 		return
 	}
 
@@ -50,6 +53,24 @@ func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = app.writeJson(w, http.StatusOK, resp)
+}
+
+func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	item, err := app.DB.GetItem(id)
+	if err != nil {
+		if errors.Is(err, appError.ErrItemNotFound) {
+
+			app.errorJSON(w, err, http.StatusNotFound)
+			return
+		}
+
+		app.errorJSON(w, appError.ErrUnexpected)
+		return
+	}
+
+	app.writeJson(w, http.StatusOK, item)
 
 }
 
