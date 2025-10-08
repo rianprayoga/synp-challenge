@@ -10,4 +10,5 @@ type DBRepo interface {
 	GetItems(pageSize int) ([]*model.Item, error)
 	GetItem(id string) (*model.Item, error)
 	AddItem(item model.CreateItem) (*model.Item, error)
+	DeleteItem(id string) error
 }

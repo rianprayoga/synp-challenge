@@ -155,5 +155,22 @@ func (r *PostgresDBRepo) AddItem(item model.CreateItem) (*model.Item, error) {
 	}
 
 	return &createdItem, nil
+}
 
+func (r *PostgresDBRepo) DeleteItem(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	_, err := r.DB.ExecContext(
+		ctx,
+		`
+		DELETE FROM items WHERE id = $1
+		`,
+		id,
+	)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

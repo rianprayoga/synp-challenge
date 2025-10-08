@@ -96,6 +96,34 @@ func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
 	app.writeJson(w, http.StatusCreated, res)
 
 }
+func (app *application) DeleteItem(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	_, err := app.DB.GetItem(id)
+	if err != nil {
+		ok, httpError := isHttpError(err)
+		if ok {
+			app.errorJSON(w, httpError.Err, httpError.StatusCode)
+			return
+		}
+
+		app.errorJSON(w, appError.ErrUnexpected)
+		return
+	}
+
+	if err := app.DB.DeleteItem(id); err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJson(
+		w,
+		http.StatusOK,
+		JSONResponse{
+			Message: "item deleted",
+		},
+	)
+
+}
 
 func isHttpError(err error) (bool, *appError.HttpError) {
 	var httpError *appError.HttpError

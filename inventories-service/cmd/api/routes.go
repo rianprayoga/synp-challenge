@@ -12,14 +12,14 @@ func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(middleware.Recoverer)
 
-	mux.Get("/items", app.GetItems)
-	mux.Get("/items/{id}", app.GetItem)
-	mux.Post("/items", app.AddItem)
+	mux.Route("/v1", func(r chi.Router) {
+		r.Get("/items", app.GetItems)
+		r.Get("/items/{id}", app.GetItem)
+		r.Post("/items", app.AddItem)
 
-	// update invotories by id
-	mux.Put("/items/{id}", nil)
-	// delete inventory
-	mux.Delete("/items/{id}", nil)
+		r.Put("/items/{id}", nil)
+		r.Delete("/items/{id}", app.DeleteItem)
+	})
 
 	return mux
 }
