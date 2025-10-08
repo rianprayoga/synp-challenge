@@ -17,7 +17,7 @@ func (app *application) routes() http.Handler {
 		r.Get("/items/{id}", app.GetItem)
 		r.Post("/items", app.AddItem)
 
-		r.Put("/items/{id}", nil)
+		r.Put("/items/{id}", app.UpdateItem)
 		r.Delete("/items/{id}", app.DeleteItem)
 	})
 

@@ -174,3 +174,36 @@ func (r *PostgresDBRepo) DeleteItem(id string) error {
 	}
 	return nil
 }
+
+func (r *PostgresDBRepo) UpdateItem(id string, item model.CreateItem) (*model.Item, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	var updatedItem model.Item
+
+	err := r.DB.QueryRowContext(
+		ctx,
+		`UPDATE items SET
+			name = $1,
+			stock = $2,
+			updated_at = $3
+		WHERE id = $4
+		RETURNING id, name, stock, created_at, updated_at`,
+		item.Name,
+		item.Stock,
+		time.Now(),
+		id,
+	).Scan(
+		&updatedItem.ID,
+		&updatedItem.Name,
+		&updatedItem.Stock,
+		&updatedItem.CreatedAt,
+		&updatedItem.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedItem, nil
+}

@@ -60,13 +60,7 @@ func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
 
 	item, err := app.DB.GetItem(id)
 	if err != nil {
-		ok, httpError := isHttpError(err)
-		if ok {
-			app.errorJSON(w, httpError.Err, httpError.StatusCode)
-			return
-		}
-
-		app.errorJSON(w, appError.ErrUnexpected)
+		processError(app, w, err)
 		return
 	}
 
@@ -77,13 +71,7 @@ func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
 	var req model.CreateItem
 	err := app.readJSON(r, &req)
 	if err != nil {
-		ok, httpError := isHttpError(err)
-		if ok {
-			app.errorJSON(w, httpError.Err, httpError.StatusCode)
-			return
-		}
-
-		app.errorJSON(w, err)
+		processError(app, w, err)
 		return
 	}
 
@@ -94,19 +82,13 @@ func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJson(w, http.StatusCreated, res)
-
 }
+
 func (app *application) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	_, err := app.DB.GetItem(id)
 	if err != nil {
-		ok, httpError := isHttpError(err)
-		if ok {
-			app.errorJSON(w, httpError.Err, httpError.StatusCode)
-			return
-		}
-
-		app.errorJSON(w, appError.ErrUnexpected)
+		processError(app, w, err)
 		return
 	}
 
@@ -122,7 +104,42 @@ func (app *application) DeleteItem(w http.ResponseWriter, r *http.Request) {
 			Message: "item deleted",
 		},
 	)
+}
 
+func (app *application) UpdateItem(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	var req model.CreateItem
+	err := app.readJSON(r, &req)
+	if err != nil {
+		processError(app, w, err)
+		return
+	}
+
+	_, err = app.DB.GetItem(id)
+	if err != nil {
+		processError(app, w, err)
+		return
+	}
+
+	res, err := app.DB.UpdateItem(id, req)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	app.writeJson(w, http.StatusOK, res)
+}
+
+func processError(app *application, w http.ResponseWriter, err error) {
+	ok, httpError := isHttpError(err)
+	if ok {
+		app.errorJSON(w, httpError.Err, httpError.StatusCode)
+		return
+	}
+
+	app.errorJSON(w, appError.ErrUnexpected)
+	return
 }
 
 func isHttpError(err error) (bool, *appError.HttpError) {
