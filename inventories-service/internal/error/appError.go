@@ -19,4 +19,9 @@ var ErrItemNotFound = &HttpError{
 	StatusCode: http.StatusNotFound,
 }
 
-var ErrUnexpected = errors.New("something unexpected")
+var ErrItemConflictVersion = &HttpError{
+	Err:        errors.New("item version mismatch"),
+	StatusCode: http.StatusConflict,
+}
+
+var ErrInternalServer = errors.New("something unexpected")

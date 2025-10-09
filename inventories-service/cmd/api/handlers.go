@@ -23,7 +23,7 @@ func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 		tmp, err := strconv.Atoi(size)
 		if err != nil {
 			log.Println(err)
-			app.errorJSON(w, appError.ErrUnexpected)
+			app.errorJSON(w, appError.ErrInternalServer)
 			return
 		}
 		pageSize = tmp
@@ -34,7 +34,7 @@ func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 	items, err := getItems(app, pageSize, cursor)
 	if err != nil {
 		log.Println(err)
-		app.errorJSON(w, appError.ErrUnexpected)
+		app.errorJSON(w, appError.ErrInternalServer)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (app *application) DeleteItem(w http.ResponseWriter, r *http.Request) {
 func (app *application) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	var req model.CreateItem
+	var req model.UpdateItem
 	err := app.readJSON(r, &req)
 	if err != nil {
 		processError(app, w, err)
@@ -124,7 +124,7 @@ func (app *application) UpdateItem(w http.ResponseWriter, r *http.Request) {
 
 	res, err := app.DB.UpdateItem(id, req)
 	if err != nil {
-		app.errorJSON(w, err)
+		processError(app, w, err)
 		return
 	}
 
@@ -138,7 +138,7 @@ func processError(app *application, w http.ResponseWriter, err error) {
 		return
 	}
 
-	app.errorJSON(w, appError.ErrUnexpected)
+	app.errorJSON(w, appError.ErrInternalServer)
 	return
 }
 

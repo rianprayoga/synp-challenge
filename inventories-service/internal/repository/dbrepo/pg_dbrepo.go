@@ -20,7 +20,7 @@ func (r *PostgresDBRepo) GetItemsWithCursor(pageSize int, cursor time.Time) ([]*
 	defer cancel()
 
 	query := `
-			SELECT id, name, stock, created_at, updated_at
+			SELECT id, name, stock, version,created_at, updated_at
 			FROM items
 			WHERE created_at < $1
 			ORDER BY created_at DESC
@@ -41,6 +41,7 @@ func (r *PostgresDBRepo) GetItemsWithCursor(pageSize int, cursor time.Time) ([]*
 			&tmp.ID,
 			&tmp.Name,
 			&tmp.Stock,
+			&tmp.Version,
 			&tmp.CreatedAt,
 			&tmp.UpdatedAt,
 		)
@@ -61,7 +62,7 @@ func (r *PostgresDBRepo) GetItems(pageSize int) ([]*model.Item, error) {
 	defer cancel()
 
 	query := `
-			SELECT id, name, stock, created_at, updated_at
+			SELECT id, name, stock, version ,created_at, updated_at
 			FROM items
 			ORDER BY created_at DESC
 			LIMIT $1
@@ -81,6 +82,7 @@ func (r *PostgresDBRepo) GetItems(pageSize int) ([]*model.Item, error) {
 			&tmp.ID,
 			&tmp.Name,
 			&tmp.Stock,
+			&tmp.Version,
 			&tmp.CreatedAt,
 			&tmp.UpdatedAt,
 		)
@@ -101,7 +103,7 @@ func (r *PostgresDBRepo) GetItem(id string) (*model.Item, error) {
 	defer cancel()
 
 	query := `
-			SELECT id, name, stock, created_at, updated_at
+			SELECT id, name, stock, version ,created_at, updated_at
 			FROM items
 			WHERE id = $1
 		`
@@ -112,6 +114,7 @@ func (r *PostgresDBRepo) GetItem(id string) (*model.Item, error) {
 		&item.ID,
 		&item.Name,
 		&item.Stock,
+		&item.Version,
 		&item.CreatedAt,
 		&item.UpdatedAt,
 	)
@@ -137,15 +140,16 @@ func (r *PostgresDBRepo) AddItem(item model.CreateItem) (*model.Item, error) {
 		`INSERT INTO items
 			(name, stock, created_at, updated_at)
 		VALUES ($1,$2,$3,$4)
-		RETURNING id, name, stock, created_at, updated_at`,
+		RETURNING id, name, stock, version ,created_at, updated_at`,
 		item.Name,
 		item.Stock,
-		time.Now(),
-		time.Now(),
+		time.Now().UTC(),
+		time.Now().UTC(),
 	).Scan(
 		&createdItem.ID,
 		&createdItem.Name,
 		&createdItem.Stock,
+		&createdItem.Version,
 		&createdItem.CreatedAt,
 		&createdItem.UpdatedAt,
 	)
@@ -175,7 +179,7 @@ func (r *PostgresDBRepo) DeleteItem(id string) error {
 	return nil
 }
 
-func (r *PostgresDBRepo) UpdateItem(id string, item model.CreateItem) (*model.Item, error) {
+func (r *PostgresDBRepo) UpdateItem(id string, item model.UpdateItem) (*model.Item, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -186,22 +190,28 @@ func (r *PostgresDBRepo) UpdateItem(id string, item model.CreateItem) (*model.It
 		`UPDATE items SET
 			name = $1,
 			stock = $2,
-			updated_at = $3
-		WHERE id = $4
-		RETURNING id, name, stock, created_at, updated_at`,
+			updated_at = $3,
+			version = version + 1
+		WHERE id = $4 AND version = $5
+		RETURNING id, name, stock, version ,created_at, updated_at`,
 		item.Name,
 		item.Stock,
-		time.Now(),
+		time.Now().UTC(),
 		id,
+		item.Version,
 	).Scan(
 		&updatedItem.ID,
 		&updatedItem.Name,
 		&updatedItem.Stock,
+		&updatedItem.Version,
 		&updatedItem.CreatedAt,
 		&updatedItem.UpdatedAt,
 	)
 
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, appError.ErrItemConflictVersion
+		}
 		return nil, err
 	}
 

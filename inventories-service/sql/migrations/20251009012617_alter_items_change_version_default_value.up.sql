@@ -1,0 +1,4 @@
+START TRANSACTION;
+UPDATE items SET version = 1 WHERE version = 0;
+ALTER TABLE  items ALTER COLUMN version SET DEFAULT 1;
+COMMIT;
