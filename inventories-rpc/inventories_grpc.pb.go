@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.32.1
-// source: inventories.proto
+// source: inventories-rpc/inventories.proto
 
 package rpc
 
@@ -19,17 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InventoryRpc_CheckStock_FullMethodName = "/rpc.InventoryRpc/CheckStock"
+	InventoryRpc_CheckStock_FullMethodName   = "/rpc.InventoryRpc/CheckStock"
+	InventoryRpc_Reservestock_FullMethodName = "/rpc.InventoryRpc/Reservestock"
 )
 
 // InventoryRpcClient is the client API for InventoryRpc service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// The greeting service definition.
 type InventoryRpcClient interface {
-	// Sends a greeting
-	CheckStock(ctx context.Context, in *Item, opts ...grpc.CallOption) (*ItemStock, error)
+	CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*ItemStock, error)
+	Reservestock(ctx context.Context, in *ReserveStockRequest, opts ...grpc.CallOption) (*ReserverResponse, error)
 }
 
 type inventoryRpcClient struct {
@@ -40,7 +39,7 @@ func NewInventoryRpcClient(cc grpc.ClientConnInterface) InventoryRpcClient {
 	return &inventoryRpcClient{cc}
 }
 
-func (c *inventoryRpcClient) CheckStock(ctx context.Context, in *Item, opts ...grpc.CallOption) (*ItemStock, error) {
+func (c *inventoryRpcClient) CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*ItemStock, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ItemStock)
 	err := c.cc.Invoke(ctx, InventoryRpc_CheckStock_FullMethodName, in, out, cOpts...)
@@ -50,14 +49,22 @@ func (c *inventoryRpcClient) CheckStock(ctx context.Context, in *Item, opts ...g
 	return out, nil
 }
 
+func (c *inventoryRpcClient) Reservestock(ctx context.Context, in *ReserveStockRequest, opts ...grpc.CallOption) (*ReserverResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReserverResponse)
+	err := c.cc.Invoke(ctx, InventoryRpc_Reservestock_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryRpcServer is the server API for InventoryRpc service.
 // All implementations must embed UnimplementedInventoryRpcServer
 // for forward compatibility.
-//
-// The greeting service definition.
 type InventoryRpcServer interface {
-	// Sends a greeting
-	CheckStock(context.Context, *Item) (*ItemStock, error)
+	CheckStock(context.Context, *CheckStockRequest) (*ItemStock, error)
+	Reservestock(context.Context, *ReserveStockRequest) (*ReserverResponse, error)
 	mustEmbedUnimplementedInventoryRpcServer()
 }
 
@@ -68,8 +75,11 @@ type InventoryRpcServer interface {
 // pointer dereference when methods are called.
 type UnimplementedInventoryRpcServer struct{}
 
-func (UnimplementedInventoryRpcServer) CheckStock(context.Context, *Item) (*ItemStock, error) {
+func (UnimplementedInventoryRpcServer) CheckStock(context.Context, *CheckStockRequest) (*ItemStock, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckStock not implemented")
+}
+func (UnimplementedInventoryRpcServer) Reservestock(context.Context, *ReserveStockRequest) (*ReserverResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Reservestock not implemented")
 }
 func (UnimplementedInventoryRpcServer) mustEmbedUnimplementedInventoryRpcServer() {}
 func (UnimplementedInventoryRpcServer) testEmbeddedByValue()                      {}
@@ -93,7 +103,7 @@ func RegisterInventoryRpcServer(s grpc.ServiceRegistrar, srv InventoryRpcServer)
 }
 
 func _InventoryRpc_CheckStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Item)
+	in := new(CheckStockRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -105,7 +115,25 @@ func _InventoryRpc_CheckStock_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: InventoryRpc_CheckStock_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InventoryRpcServer).CheckStock(ctx, req.(*Item))
+		return srv.(InventoryRpcServer).CheckStock(ctx, req.(*CheckStockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryRpc_Reservestock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReserveStockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryRpcServer).Reservestock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryRpc_Reservestock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryRpcServer).Reservestock(ctx, req.(*ReserveStockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -121,7 +149,11 @@ var InventoryRpc_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "CheckStock",
 			Handler:    _InventoryRpc_CheckStock_Handler,
 		},
+		{
+			MethodName: "Reservestock",
+			Handler:    _InventoryRpc_Reservestock_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "inventories.proto",
+	Metadata: "inventories-rpc/inventories.proto",
 }

@@ -8,24 +8,8 @@ option java_outer_classname = "HelloWorldProto";
 package rpc;
 
 service InventoryRpc {
-    
-    rpc AddItem(AddItem) returns (ItemResponse) {}
-
     rpc CheckStock(CheckStockRequest) returns (ItemStock) {}
-}
-
-message AddItem {
-    string name = 1;
-    int32 stock = 2;    
-}
-
-message ItemResponse {
-    string id = 1;
-    string name = 1;
-    int32  stock = 1;
-    int32  version = 1;
-    string createdAt = 1;
-    string updatedAt = 1;
+    rpc Reservestock(ReserveStockRequest) returns (ReserverResponse) {}
 }
 
 message CheckStockRequest {
@@ -35,4 +19,18 @@ message CheckStockRequest {
 message ItemStock {
     string itemId = 1;
     int32 stock = 2;
+    int32 version = 3;
+}
+
+message ReserveStockRequest {
+    string itemId = 1;
+    int32 qty = 2;
+    int32 version = 3;
+}
+
+message ReserverResponse {
+    string itemId = 1;
+    int32 version = 2;
+    int32 stockReduced = 3;
+    int32 stockRemaining = 4;
 }

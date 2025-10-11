@@ -15,6 +15,43 @@ type PostgresDBRepo struct {
 
 const dbTimeout = 3 * time.Second
 
+func (r *PostgresDBRepo) ReduceStock(id string, qty int, version int) (*model.Item, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	var updatedItem model.Item
+
+	err := r.DB.QueryRowContext(
+		ctx,
+		`UPDATE items SET
+			stock = stock - $1,
+			updated_at = $2,
+			version = version + 1
+		WHERE id = $3 AND version = $4
+		RETURNING id, name, stock, version ,created_at, updated_at`,
+		qty,
+		time.Now().UTC(),
+		id,
+		version,
+	).Scan(
+		&updatedItem.ID,
+		&updatedItem.Name,
+		&updatedItem.Stock,
+		&updatedItem.Version,
+		&updatedItem.CreatedAt,
+		&updatedItem.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, appError.ErrItemConflictVersion
+		}
+		return nil, err
+	}
+
+	return &updatedItem, nil
+}
+
 func (r *PostgresDBRepo) GetItemsWithCursor(pageSize int, cursor time.Time) ([]*model.Item, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
