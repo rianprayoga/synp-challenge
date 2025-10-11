@@ -45,8 +45,7 @@ message ReleaseStockRequest {
 
 message ReleaseResponse {
     string itemId = 1;
-    int32 qty = 2;
-    int32 version = 3;
-    int32 stockReleased = 4;
-    int32 stockRemaining = 5;
+    int32 version = 2;
+    int32 stockReleased = 3;
+    int32 stockRemaining = 4;
 }

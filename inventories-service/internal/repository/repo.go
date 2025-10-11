@@ -13,4 +13,5 @@ type DBRepo interface {
 	DeleteItem(id string) error
 	UpdateItem(id string, item model.UpdateItem) (*model.Item, error)
 	ReduceStock(id string, qty int, version int, orderId string) (*model.Item, error)
+	ReleaseStock(itemId string, orderId string) (*model.Item, error)
 }

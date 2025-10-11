@@ -324,10 +324,9 @@ func (x *ReleaseStockRequest) GetQty() int32 {
 type ReleaseResponse struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	ItemId         string                 `protobuf:"bytes,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
-	Qty            int32                  `protobuf:"varint,2,opt,name=qty,proto3" json:"qty,omitempty"`
-	Version        int32                  `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
-	StockReleased  int32                  `protobuf:"varint,4,opt,name=stockReleased,proto3" json:"stockReleased,omitempty"`
-	StockRemaining int32                  `protobuf:"varint,5,opt,name=stockRemaining,proto3" json:"stockRemaining,omitempty"`
+	Version        int32                  `protobuf:"varint,2,opt,name=version,proto3" json:"version,omitempty"`
+	StockReleased  int32                  `protobuf:"varint,3,opt,name=stockReleased,proto3" json:"stockReleased,omitempty"`
+	StockRemaining int32                  `protobuf:"varint,4,opt,name=stockRemaining,proto3" json:"stockRemaining,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -367,13 +366,6 @@ func (x *ReleaseResponse) GetItemId() string {
 		return x.ItemId
 	}
 	return ""
-}
-
-func (x *ReleaseResponse) GetQty() int32 {
-	if x != nil {
-		return x.Qty
-	}
-	return 0
 }
 
 func (x *ReleaseResponse) GetVersion() int32 {
@@ -421,13 +413,12 @@ const file_inventories_rpc_inventories_proto_rawDesc = "" +
 	"\x13ReleaseStockRequest\x12\x16\n" +
 	"\x06itemId\x18\x01 \x01(\tR\x06itemId\x12\x18\n" +
 	"\aorderId\x18\x02 \x01(\tR\aorderId\x12\x10\n" +
-	"\x03qty\x18\x03 \x01(\x05R\x03qty\"\xa3\x01\n" +
+	"\x03qty\x18\x03 \x01(\x05R\x03qty\"\x91\x01\n" +
 	"\x0fReleaseResponse\x12\x16\n" +
-	"\x06itemId\x18\x01 \x01(\tR\x06itemId\x12\x10\n" +
-	"\x03qty\x18\x02 \x01(\x05R\x03qty\x12\x18\n" +
-	"\aversion\x18\x03 \x01(\x05R\aversion\x12$\n" +
-	"\rstockReleased\x18\x04 \x01(\x05R\rstockReleased\x12&\n" +
-	"\x0estockRemaining\x18\x05 \x01(\x05R\x0estockRemaining2\xcb\x01\n" +
+	"\x06itemId\x18\x01 \x01(\tR\x06itemId\x12\x18\n" +
+	"\aversion\x18\x02 \x01(\x05R\aversion\x12$\n" +
+	"\rstockReleased\x18\x03 \x01(\x05R\rstockReleased\x12&\n" +
+	"\x0estockRemaining\x18\x04 \x01(\x05R\x0estockRemaining2\xcb\x01\n" +
 	"\fInventoryRpc\x126\n" +
 	"\n" +
 	"CheckStock\x12\x16.rpc.CheckStockRequest\x1a\x0e.rpc.ItemStock\"\x00\x12A\n" +

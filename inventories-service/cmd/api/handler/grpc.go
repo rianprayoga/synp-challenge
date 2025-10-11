@@ -22,7 +22,18 @@ func NewGrpcItemService(grpc *grpc.Server, repo repository.DBRepo) {
 }
 
 func (it *ItemsGrpcHandler) ReleaseStock(c context.Context, r *pb.ReleaseStockRequest) (*pb.ReleaseResponse, error) {
-	return nil, nil
+
+	item, err := it.DB.ReleaseStock(r.ItemId, r.OrderId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ReleaseResponse{
+		ItemId:         item.ID,
+		Version:        int32(item.Version),
+		StockReleased:  r.Qty,
+		StockRemaining: int32(item.Stock),
+	}, nil
 }
 
 func (it *ItemsGrpcHandler) ReserveStock(c context.Context, r *pb.ReserveStockRequest) (*pb.ReserverResponse, error) {

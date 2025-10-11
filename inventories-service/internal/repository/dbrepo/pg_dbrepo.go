@@ -15,6 +15,77 @@ type PostgresDBRepo struct {
 
 const dbTimeout = 3 * time.Second
 
+func (r *PostgresDBRepo) ReleaseStock(itemId string, orderId string) (*model.Item, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	tx, err := r.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	var trxQty int
+	err = tx.QueryRowContext(ctx,
+		`
+		UPDATE transactions
+		SET
+			updated_at = $1,
+			released = true
+		WHERE item_id = $2 AND order_id = $3 AND released = false
+		RETURNING qty
+	`,
+		time.Now().UTC(),
+		itemId,
+		orderId,
+	).Scan(&trxQty)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, appError.ErrTrxNotFound
+		}
+
+		return nil, err
+	}
+
+	var updatedItem model.Item
+	err = tx.QueryRowContext(
+		ctx,
+		`UPDATE items SET
+			stock = stock + $1,
+			updated_at = $2,
+			version = version + 1
+		WHERE id = $3 
+		RETURNING id, name, stock, version ,created_at, updated_at`,
+		trxQty,
+		time.Now().UTC(),
+		itemId,
+	).Scan(
+		&updatedItem.ID,
+		&updatedItem.Name,
+		&updatedItem.Stock,
+		&updatedItem.Version,
+		&updatedItem.CreatedAt,
+		&updatedItem.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, appError.ErrItemNotFound
+		}
+
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedItem, nil
+
+}
+
 func (r *PostgresDBRepo) ReduceStock(itemId string, qty int, version int, orderId string) (*model.Item, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()

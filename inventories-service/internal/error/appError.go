@@ -19,6 +19,11 @@ var ErrItemNotFound = &HttpError{
 	StatusCode: http.StatusNotFound,
 }
 
+var ErrTrxNotFound = &HttpError{
+	Err:        errors.New("transaction not found"),
+	StatusCode: http.StatusNotFound,
+}
+
 var ErrItemConflictVersion = &HttpError{
 	Err:        errors.New("item version mismatch"),
 	StatusCode: http.StatusConflict,
