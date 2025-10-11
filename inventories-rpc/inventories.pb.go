@@ -130,6 +130,7 @@ type ReserveStockRequest struct {
 	ItemId        string                 `protobuf:"bytes,1,opt,name=itemId,proto3" json:"itemId,omitempty"`
 	Qty           int32                  `protobuf:"varint,2,opt,name=qty,proto3" json:"qty,omitempty"`
 	Version       int32                  `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`
+	OrderId       string                 `protobuf:"bytes,4,opt,name=orderId,proto3" json:"orderId,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -183,6 +184,13 @@ func (x *ReserveStockRequest) GetVersion() int32 {
 		return x.Version
 	}
 	return 0
+}
+
+func (x *ReserveStockRequest) GetOrderId() string {
+	if x != nil {
+		return x.OrderId
+	}
+	return ""
 }
 
 type ReserverResponse struct {
@@ -399,11 +407,12 @@ const file_inventories_rpc_inventories_proto_rawDesc = "" +
 	"\tItemStock\x12\x16\n" +
 	"\x06itemId\x18\x01 \x01(\tR\x06itemId\x12\x14\n" +
 	"\x05stock\x18\x02 \x01(\x05R\x05stock\x12\x18\n" +
-	"\aversion\x18\x03 \x01(\x05R\aversion\"Y\n" +
+	"\aversion\x18\x03 \x01(\x05R\aversion\"s\n" +
 	"\x13ReserveStockRequest\x12\x16\n" +
 	"\x06itemId\x18\x01 \x01(\tR\x06itemId\x12\x10\n" +
 	"\x03qty\x18\x02 \x01(\x05R\x03qty\x12\x18\n" +
-	"\aversion\x18\x03 \x01(\x05R\aversion\"\x90\x01\n" +
+	"\aversion\x18\x03 \x01(\x05R\aversion\x12\x18\n" +
+	"\aorderId\x18\x04 \x01(\tR\aorderId\"\x90\x01\n" +
 	"\x10ReserverResponse\x12\x16\n" +
 	"\x06itemId\x18\x01 \x01(\tR\x06itemId\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\x05R\aversion\x12\"\n" +

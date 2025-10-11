@@ -26,7 +26,7 @@ func (it *ItemsGrpcHandler) ReleaseStock(c context.Context, r *pb.ReleaseStockRe
 }
 
 func (it *ItemsGrpcHandler) ReserveStock(c context.Context, r *pb.ReserveStockRequest) (*pb.ReserverResponse, error) {
-	item, err := it.DB.ReduceStock(r.ItemId, int(r.Qty), int(r.Version))
+	item, err := it.DB.ReduceStock(r.ItemId, int(r.Qty), int(r.Version), r.OrderId)
 	if err != nil {
 		return nil, err
 	}

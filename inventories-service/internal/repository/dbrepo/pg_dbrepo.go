@@ -15,13 +15,19 @@ type PostgresDBRepo struct {
 
 const dbTimeout = 3 * time.Second
 
-func (r *PostgresDBRepo) ReduceStock(id string, qty int, version int) (*model.Item, error) {
+func (r *PostgresDBRepo) ReduceStock(itemId string, qty int, version int, orderId string) (*model.Item, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
+	tx, err := r.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
 	var updatedItem model.Item
 
-	err := r.DB.QueryRowContext(
+	err = tx.QueryRowContext(
 		ctx,
 		`UPDATE items SET
 			stock = stock - $1,
@@ -31,7 +37,7 @@ func (r *PostgresDBRepo) ReduceStock(id string, qty int, version int) (*model.It
 		RETURNING id, name, stock, version ,created_at, updated_at`,
 		qty,
 		time.Now().UTC(),
-		id,
+		itemId,
 		version,
 	).Scan(
 		&updatedItem.ID,
@@ -46,6 +52,26 @@ func (r *PostgresDBRepo) ReduceStock(id string, qty int, version int) (*model.It
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, appError.ErrItemConflictVersion
 		}
+		return nil, err
+	}
+
+	_, err = tx.ExecContext(ctx,
+		`INSERT INTO 
+			transactions(order_id, item_id, qty, created_at, updated_at)
+		VALUES($1, $2, $3, $4, $5)
+		`,
+		orderId,
+		itemId,
+		qty,
+		time.Now().UTC(),
+		time.Now().UTC(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
 		return nil, err
 	}
 

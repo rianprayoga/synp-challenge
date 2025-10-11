@@ -27,6 +27,7 @@ message ReserveStockRequest {
     string itemId = 1;
     int32 qty = 2;
     int32 version = 3;
+    string orderId = 4;
 }
 
 message ReserverResponse {
