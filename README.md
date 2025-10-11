@@ -44,5 +44,5 @@ or
 make run-orders
 ```
 
-# Setup
+# Test
 There is postman collection in foler test.

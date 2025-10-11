@@ -23,7 +23,6 @@ func (hs *HttpHandler) Routes() http.Handler {
 	mux.Route("/v1", func(r chi.Router) {
 
 		r.Post("/orders", hs.AddOrder)
-		r.Get("/hello", hs.Hello)
 
 	})
 

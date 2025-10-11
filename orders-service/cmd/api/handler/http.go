@@ -15,14 +15,6 @@ import (
 
 const clientTimeout = time.Second * 20
 
-func (app *HttpHandler) Hello(w http.ResponseWriter, r *http.Request) {
-
-	app.writeJson(w, http.StatusOK, model.OrderRequest{
-		ItemId: "123",
-		Qty:    2,
-	})
-}
-
 func (app *HttpHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 
 	var req model.OrderRequest
