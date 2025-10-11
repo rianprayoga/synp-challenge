@@ -23,11 +23,11 @@ cd inventories-service/
 migrate -database postgres://postgres:postgres@localhost:5432/orders?sslmode=disable -path sql/migrations up
 ```
 
-ERD for inventory
-![inventory db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-inventory.png?raw=true)
+ERD for inventory <br>
+![inventory db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-inventory.png)
 
-ERD for order
-![order db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-order.png?raw=true)
+ERD for order <br>
+![order db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-order.png)
 
 
 ## Running service
@@ -44,3 +44,5 @@ or
 make run-orders
 ```
 
+# Setup
+There is postman collection in foler test.
