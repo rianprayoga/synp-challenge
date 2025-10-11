@@ -1,0 +1,51 @@
+should be on swagger but time is running out lol :D
+inventory-service
+
+POST localhost:8081/v1/items
+body: 
+{
+	"name": "sword",
+	"stock": 12
+}
+
+GET localhost:8081/v1/items/{itemId}
+response: 
+{
+    "id": "83c89d35-3d29-4a80-b9b0-03fac17d7abf",
+    "name": "noodles",
+    "stock": 20,
+    "version": 1,
+    "createdAt": "2025-10-08T01:51:05.705031Z",
+    "updatedAt": "2025-10-08T01:51:05.705031Z"
+}
+
+
+GET localhost:8081/v1/items?size=10&cursor=MjAyNS0xMC0wOVQwMTozNDo0Mlo=
+response: 
+{
+    "nextCursor": "MjAyNS0xMC0wOFQxOTo1NDoyNFo=",
+    "data": [
+        {
+            "id": "365c3f13-4d77-4daa-93ec-c296391877e2",
+            "name": "swing potato",
+            "stock": 7,
+            "version": 2,
+            "createdAt": "2025-10-08T20:09:07.295455Z",
+            "updatedAt": "2025-10-09T08:29:46.673883Z"
+        }
+    ]
+}
+
+DELETE localhost:8081/v1/items/{itemId}
+response:
+{
+    "message": "item deleted"
+}
+
+PUT localhost:8081/v1/items/{itemId}
+body:
+{
+    "name": "swing potato",
+    "stock": 90,
+    "version": 1
+}

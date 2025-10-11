@@ -1,0 +1,9 @@
+should be on swagger but time is running out lol :D
+order-service
+
+POST localhost:8083/v1/orders
+body: 
+{
+	"itemId": "sword",
+	"qty": 12
+}
