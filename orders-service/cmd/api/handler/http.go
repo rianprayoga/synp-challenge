@@ -58,6 +58,7 @@ func (app *HttpHandler) AddOrder(w http.ResponseWriter, r *http.Request) {
 		ItemId:  req.ItemId,
 		Version: itemStock.Version,
 		OrderId: orderId,
+		Qty:     int32(req.Qty),
 	})
 	if err != nil {
 		_, err := app.DB.AddOrder(orderId, false, req)
