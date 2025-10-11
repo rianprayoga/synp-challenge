@@ -1,5 +1,8 @@
 run-inventories:
 	@cd '$(CURDIR)/inventories-service' && go run ./cmd/api/
+
+run-orders:
+	@cd '$(CURDIR)/orders-service' && go run ./cmd/api/
 	
 
 gen: 
