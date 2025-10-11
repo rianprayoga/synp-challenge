@@ -17,8 +17,8 @@ cd inventories-service/
 migrate -database postgres://postgres:postgres@localhost:5432/orders?sslmode=disable -path sql/migrations up
 ```
 
-![inventory db](https://github.com/rianprayoga/synp-challenge/doc/main/db-inventory.png?raw=true)
-![order db](https://github.com/rianprayoga/synp-challenge/doc/main/db-order.png?raw=true)
+![inventory db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-inventory.png?raw=true)
+![order db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-order.png?raw=true)
 
 
 ## Running service
