@@ -9,7 +9,8 @@ package rpc;
 
 service InventoryRpc {
     rpc CheckStock(CheckStockRequest) returns (ItemStock) {}
-    rpc Reservestock(ReserveStockRequest) returns (ReserverResponse) {}
+    rpc ReserveStock(ReserveStockRequest) returns (ReserverResponse) {}
+    rpc ReleaseStock(ReleaseStockRequest) returns (ReleaseResponse) {}
 }
 
 message CheckStockRequest {
@@ -33,4 +34,18 @@ message ReserverResponse {
     int32 version = 2;
     int32 stockReduced = 3;
     int32 stockRemaining = 4;
+}
+
+message ReleaseStockRequest {
+    string itemId = 1;
+    string orderId = 2;
+    int32 qty = 3;
+}
+
+message ReleaseResponse {
+    string itemId = 1;
+    int32 qty = 2;
+    int32 version = 3;
+    int32 stockReleased = 4;
+    int32 stockRemaining = 5;
 }

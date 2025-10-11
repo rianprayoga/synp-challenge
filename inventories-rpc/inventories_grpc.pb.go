@@ -20,7 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	InventoryRpc_CheckStock_FullMethodName   = "/rpc.InventoryRpc/CheckStock"
-	InventoryRpc_Reservestock_FullMethodName = "/rpc.InventoryRpc/Reservestock"
+	InventoryRpc_ReserveStock_FullMethodName = "/rpc.InventoryRpc/ReserveStock"
+	InventoryRpc_ReleaseStock_FullMethodName = "/rpc.InventoryRpc/ReleaseStock"
 )
 
 // InventoryRpcClient is the client API for InventoryRpc service.
@@ -28,7 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InventoryRpcClient interface {
 	CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*ItemStock, error)
-	Reservestock(ctx context.Context, in *ReserveStockRequest, opts ...grpc.CallOption) (*ReserverResponse, error)
+	ReserveStock(ctx context.Context, in *ReserveStockRequest, opts ...grpc.CallOption) (*ReserverResponse, error)
+	ReleaseStock(ctx context.Context, in *ReleaseStockRequest, opts ...grpc.CallOption) (*ReleaseResponse, error)
 }
 
 type inventoryRpcClient struct {
@@ -49,10 +51,20 @@ func (c *inventoryRpcClient) CheckStock(ctx context.Context, in *CheckStockReque
 	return out, nil
 }
 
-func (c *inventoryRpcClient) Reservestock(ctx context.Context, in *ReserveStockRequest, opts ...grpc.CallOption) (*ReserverResponse, error) {
+func (c *inventoryRpcClient) ReserveStock(ctx context.Context, in *ReserveStockRequest, opts ...grpc.CallOption) (*ReserverResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ReserverResponse)
-	err := c.cc.Invoke(ctx, InventoryRpc_Reservestock_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, InventoryRpc_ReserveStock_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryRpcClient) ReleaseStock(ctx context.Context, in *ReleaseStockRequest, opts ...grpc.CallOption) (*ReleaseResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReleaseResponse)
+	err := c.cc.Invoke(ctx, InventoryRpc_ReleaseStock_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +76,8 @@ func (c *inventoryRpcClient) Reservestock(ctx context.Context, in *ReserveStockR
 // for forward compatibility.
 type InventoryRpcServer interface {
 	CheckStock(context.Context, *CheckStockRequest) (*ItemStock, error)
-	Reservestock(context.Context, *ReserveStockRequest) (*ReserverResponse, error)
+	ReserveStock(context.Context, *ReserveStockRequest) (*ReserverResponse, error)
+	ReleaseStock(context.Context, *ReleaseStockRequest) (*ReleaseResponse, error)
 	mustEmbedUnimplementedInventoryRpcServer()
 }
 
@@ -78,8 +91,11 @@ type UnimplementedInventoryRpcServer struct{}
 func (UnimplementedInventoryRpcServer) CheckStock(context.Context, *CheckStockRequest) (*ItemStock, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckStock not implemented")
 }
-func (UnimplementedInventoryRpcServer) Reservestock(context.Context, *ReserveStockRequest) (*ReserverResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Reservestock not implemented")
+func (UnimplementedInventoryRpcServer) ReserveStock(context.Context, *ReserveStockRequest) (*ReserverResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReserveStock not implemented")
+}
+func (UnimplementedInventoryRpcServer) ReleaseStock(context.Context, *ReleaseStockRequest) (*ReleaseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReleaseStock not implemented")
 }
 func (UnimplementedInventoryRpcServer) mustEmbedUnimplementedInventoryRpcServer() {}
 func (UnimplementedInventoryRpcServer) testEmbeddedByValue()                      {}
@@ -120,20 +136,38 @@ func _InventoryRpc_CheckStock_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _InventoryRpc_Reservestock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _InventoryRpc_ReserveStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReserveStockRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InventoryRpcServer).Reservestock(ctx, in)
+		return srv.(InventoryRpcServer).ReserveStock(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InventoryRpc_Reservestock_FullMethodName,
+		FullMethod: InventoryRpc_ReserveStock_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InventoryRpcServer).Reservestock(ctx, req.(*ReserveStockRequest))
+		return srv.(InventoryRpcServer).ReserveStock(ctx, req.(*ReserveStockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryRpc_ReleaseStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReleaseStockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryRpcServer).ReleaseStock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryRpc_ReleaseStock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryRpcServer).ReleaseStock(ctx, req.(*ReleaseStockRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -150,8 +184,12 @@ var InventoryRpc_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _InventoryRpc_CheckStock_Handler,
 		},
 		{
-			MethodName: "Reservestock",
-			Handler:    _InventoryRpc_Reservestock_Handler,
+			MethodName: "ReserveStock",
+			Handler:    _InventoryRpc_ReserveStock_Handler,
+		},
+		{
+			MethodName: "ReleaseStock",
+			Handler:    _InventoryRpc_ReleaseStock_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
