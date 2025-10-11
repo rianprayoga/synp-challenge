@@ -34,6 +34,4 @@ require (
 
 )
 
-replace rpci => ../inventories-rpc/rpci
-
 replace rpc => ../inventories-rpc

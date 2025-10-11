@@ -16,7 +16,7 @@ func (r *HttpError) Error() string {
 
 var ErrItemNotFound = &HttpError{
 	Err:        errors.New("item not found"),
-	StatusCode: http.StatusNotFound,
+	StatusCode: http.StatusBadRequest,
 }
 
 var ErrTrxNotFound = &HttpError{
@@ -30,3 +30,4 @@ var ErrItemConflictVersion = &HttpError{
 }
 
 var ErrInternalServer = errors.New("something unexpected")
+var ErrOutOfStock = errors.New("current stock is lower than requested")

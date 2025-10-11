@@ -6,6 +6,9 @@ import (
 	"orders-app/cmd/api/httpserver"
 	"orders-app/internal/repository"
 	"orders-app/internal/repository/dbrepo"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type application struct {
@@ -31,6 +34,12 @@ func main() {
 	app.DB = &dbrepo.PostgresDBRepo{DB: conn}
 	defer conn.Close()
 
-	httpServer := httpserver.NewHttpServer(app.HttpPort, app.DB)
+	grpcConn, err := grpc.NewClient(app.InventoryGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	httpServer := httpserver.NewHttpServer(app.HttpPort, app.DB, grpcConn)
 	httpServer.Run()
 }

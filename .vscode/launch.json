@@ -5,11 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Launch Package Inventory",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/inventories-service/cmd/api",
+        },
+        {
+            "name": "Launch Package Order",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/orders-service/cmd/api",
         }
     ]
 }

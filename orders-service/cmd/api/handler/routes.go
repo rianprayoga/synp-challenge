@@ -6,10 +6,13 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	pb "rpc"
 )
 
 type HttpHandler struct {
-	DB repository.DBRepo
+	DB               repository.DBRepo
+	InventoryService pb.InventoryRpcClient
 }
 
 func (hs *HttpHandler) Routes() http.Handler {
@@ -20,6 +23,7 @@ func (hs *HttpHandler) Routes() http.Handler {
 	mux.Route("/v1", func(r chi.Router) {
 
 		r.Post("/orders", hs.AddOrder)
+		r.Get("/hello", hs.Hello)
 
 	})
 

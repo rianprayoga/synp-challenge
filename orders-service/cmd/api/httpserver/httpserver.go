@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"orders-app/cmd/api/handler"
 	"orders-app/internal/repository"
+	pb "rpc"
+
+	"google.golang.org/grpc"
 )
 
 type httpServer struct {
@@ -13,12 +16,13 @@ type httpServer struct {
 	HttpHandler handler.HttpHandler
 }
 
-func NewHttpServer(addr string, repo repository.DBRepo) *httpServer {
+func NewHttpServer(addr string, repo repository.DBRepo, conn *grpc.ClientConn) *httpServer {
 
 	return &httpServer{
 		addr: addr,
 		HttpHandler: handler.HttpHandler{
-			DB: repo,
+			DB:               repo,
+			InventoryService: pb.NewInventoryRpcClient(conn),
 		},
 	}
 }

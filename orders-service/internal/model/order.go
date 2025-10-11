@@ -7,12 +7,16 @@ type OrderRequest struct {
 	Qty    int    `json:"qty" validate:"required,gt=0"`
 }
 
+type OrderResponse struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
+}
+
 type Order struct {
-	ID          string `json:"id"`
-	ItemId      string `json:"itemId"`
-	Qty         int    `json:"qty"`
+	ID          string
+	ItemId      string
+	Qty         int
 	IsConfirmed bool
-	Status      string    `json:"status"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
