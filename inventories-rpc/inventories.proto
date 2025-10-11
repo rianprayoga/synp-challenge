@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option go_package = "./rpc";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.helloworld";
+option java_outer_classname = "HelloWorldProto";
+
+package rpc;
+
+service InventoryRpc {
+    
+    rpc AddItem(AddItem) returns (ItemResponse) {}
+
+    rpc CheckStock(CheckStockRequest) returns (ItemStock) {}
+}
+
+message AddItem {
+    string name = 1;
+    int32 stock = 2;    
+}
+
+message ItemResponse {
+    string id = 1;
+    string name = 1;
+    int32  stock = 1;
+    int32  version = 1;
+    string createdAt = 1;
+    string updatedAt = 1;
+}
+
+message CheckStockRequest {
+    string itemId = 1;
+}
+
+message ItemStock {
+    string itemId = 1;
+    int32 stock = 2;
+}

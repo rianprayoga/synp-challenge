@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -16,7 +16,7 @@ type JSONResponse struct {
 	Message string `json:"message"`
 }
 
-func (app *application) writeJson(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
+func (app *HttpHandler) writeJson(w http.ResponseWriter, status int, data interface{}, headers ...http.Header) error {
 
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -39,7 +39,7 @@ func (app *application) writeJson(w http.ResponseWriter, status int, data interf
 	return nil
 }
 
-func (app *application) readJSON(r *http.Request, data interface{}) error {
+func (app *HttpHandler) readJSON(r *http.Request, data interface{}) error {
 
 	dec := json.NewDecoder(r.Body)
 
@@ -67,7 +67,7 @@ func (app *application) readJSON(r *http.Request, data interface{}) error {
 	}
 }
 
-func (app *application) errorJSON(w http.ResponseWriter, err error, status ...int) error {
+func (app *HttpHandler) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 
 	statusCode := http.StatusInternalServerError
 	if len(status) > 0 {

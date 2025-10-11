@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	b64 "encoding/base64"
@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
+func (app *HttpHandler) GetItems(w http.ResponseWriter, r *http.Request) {
 
 	var pageSize int
 	size := r.URL.Query().Get("size")
@@ -55,7 +55,7 @@ func (app *application) GetItems(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJson(w, http.StatusOK, resp)
 }
 
-func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
+func (app *HttpHandler) GetItem(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	item, err := app.DB.GetItem(id)
@@ -67,7 +67,7 @@ func (app *application) GetItem(w http.ResponseWriter, r *http.Request) {
 	app.writeJson(w, http.StatusOK, item)
 }
 
-func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
+func (app *HttpHandler) AddItem(w http.ResponseWriter, r *http.Request) {
 	var req model.CreateItem
 	err := app.readJSON(r, &req)
 	if err != nil {
@@ -84,7 +84,7 @@ func (app *application) AddItem(w http.ResponseWriter, r *http.Request) {
 	app.writeJson(w, http.StatusCreated, res)
 }
 
-func (app *application) DeleteItem(w http.ResponseWriter, r *http.Request) {
+func (app *HttpHandler) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	_, err := app.DB.GetItem(id)
 	if err != nil {
@@ -106,7 +106,7 @@ func (app *application) DeleteItem(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-func (app *application) UpdateItem(w http.ResponseWriter, r *http.Request) {
+func (app *HttpHandler) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	var req model.UpdateItem
@@ -131,7 +131,7 @@ func (app *application) UpdateItem(w http.ResponseWriter, r *http.Request) {
 	app.writeJson(w, http.StatusOK, res)
 }
 
-func processError(app *application, w http.ResponseWriter, err error) {
+func processError(app *HttpHandler, w http.ResponseWriter, err error) {
 	ok, httpError := isHttpError(err)
 	if ok {
 		app.errorJSON(w, httpError.Err, httpError.StatusCode)
@@ -151,7 +151,7 @@ func isHttpError(err error) (bool, *appError.HttpError) {
 	return false, nil
 }
 
-func getItems(app *application, size int, cursor string) ([]*model.Item, error) {
+func getItems(app *HttpHandler, size int, cursor string) ([]*model.Item, error) {
 	if cursor == "" {
 		items, err := app.DB.GetItems(size + 1)
 		if err != nil {
