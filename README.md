@@ -1,3 +1,10 @@
+# Description
+The inventory only consist of 2 tables, items and transactions. For simplicity no SKU to track number of items.
+Using Optimistic Locking in inventory service, no resource blocking but increase the number of conflict between clients. 
+To lock I use *version* column. This version will increase everytimes changes occur on the specified record.
+
+The transactions table is to record the changes, if there is failed order we can revert it by orderId.
+
 # Setup
 
 ## Database
@@ -34,11 +41,4 @@ or
 ```
 make run-orders
 ```
-
-# Description
-The inventory only consist of 2 tables, items and transactions. For simplicity no SKU to track number of items.
-Using Optimistic Locking in inventory service, no resource blocking but increase the number of conflict between clients. 
-To lock I use *version* column. This version will increase everytimes changes occur on the specified record.
-
-The transactions table is to record the changes, if there is failed order we can revert it by orderId.
 
