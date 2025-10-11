@@ -1,8 +1,7 @@
 # Description
-The inventory only consist of 2 tables, items and transactions. For simplicity no SKU to track number of items.
-Using Optimistic Locking in inventory service, no resource blocking but increase the number of conflict between clients. 
+The inventory only consist of 2 tables, items and transactions. For simplicity no SKU to track number of items. <br>
+Using Optimistic Locking in inventory service, no resource blocking but increase the number of conflict between clients. <br>
 To lock I use *version* column. This version will increase everytimes changes occur on the specified record.
-
 The transactions table is to record the changes, if there is failed order we can revert it by orderId.
 
 # Setup
@@ -24,7 +23,10 @@ cd inventories-service/
 migrate -database postgres://postgres:postgres@localhost:5432/orders?sslmode=disable -path sql/migrations up
 ```
 
+ERD for inventory
 ![inventory db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-inventory.png?raw=true)
+
+ERD for order
 ![order db](https://github.com/rianprayoga/synp-challenge/blob/main/doc/db-order.png?raw=true)
 
 
